@@ -1,0 +1,65 @@
+%global debug_package %{nil}
+
+Name:           fastflowlm
+Version:        0.9.43
+Release:        1%{?dist}
+Summary:        FastFlowLM inference runtime for AMD NPU
+
+License:        MIT AND Proprietary
+URL:            https://github.com/FastFlowLM/FastFlowLM
+Source0:        %{name}-%{version}.tar.gz
+
+BuildRequires:  gcc-c++
+BuildRequires:  cmake
+BuildRequires:  ninja-build
+BuildRequires:  boost-devel
+BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(fftw3)
+BuildRequires:  pkgconfig(fftw3f)
+BuildRequires:  pkgconfig(fftw3l)
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswscale)
+BuildRequires:  pkgconfig(libswresample)
+BuildRequires:  readline-devel
+BuildRequires:  rust
+BuildRequires:  cargo
+BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  libuuid-devel
+BuildRequires:  xrt-devel
+
+# FastFlowLM runtime dependencies
+Requires:       xrt-npu
+Requires:       xrt-plugin-amdxdna
+
+%description
+FastFlowLM inference runtime for AMD NPU devices.
+
+%prep
+%autosetup -p1
+
+%build
+# Configure CMake to use the bundled XRT package headers and libraries
+%cmake -S FastFlowLM/src -B %{_vpath_builddir} \
+    -GNinja \
+    -DFLM_VERSION=%{version} \
+    -DNPU_VERSION=32.0.203.304 \
+    -DXRT_INCLUDE_DIR=/opt/xilinx/xrt/include \
+    -DXRT_LIB_DIR=/opt/xilinx/xrt/lib64
+
+%cmake_build
+
+%install
+%cmake_install
+
+%files
+%license FastFlowLM/LICENSE_RUNTIME.txt FastFlowLM/LICENSE_BINARY.txt
+%doc FastFlowLM/README.md
+%{_bindir}/flm
+%{_libdir}/flm/
+%{_datadir}/flm/
+
+%changelog
+* Tue Jun 02 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.43-1
+- Initial packaging of FastFlowLM

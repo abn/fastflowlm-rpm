@@ -1,0 +1,3 @@
+[submodule "FastFlowLM"]
+	path = FastFlowLM
+	url = https://github.com/FastFlowLM/FastFlowLM.git
