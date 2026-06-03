@@ -46,7 +46,8 @@ FastFlowLM inference runtime for AMD NPU devices.
     -DFLM_VERSION=%{version} \
     -DNPU_VERSION=32.0.203.304 \
     -DXRT_INCLUDE_DIR=/opt/xilinx/xrt/include \
-    -DXRT_LIB_DIR=/opt/xilinx/xrt/lib64
+    -DXRT_LIB_DIR=/opt/xilinx/xrt/lib64 \
+    -DCMAKE_XCLBIN_PREFIX=%{_datadir}/flm
 
 %cmake_build
 
