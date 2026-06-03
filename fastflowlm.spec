@@ -2,7 +2,7 @@
 
 Name:           fastflowlm
 Version:        0.9.43
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
 License:        MIT AND Proprietary
@@ -62,5 +62,8 @@ FastFlowLM inference runtime for AMD NPU devices.
 %{_datadir}/flm/
 
 %changelog
+* Wed Jun 03 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.43-2
+- Fix runtime search path for xclbins by setting CMAKE_XCLBIN_PREFIX
+
 * Tue Jun 02 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.43-1
 - Initial packaging of FastFlowLM
