@@ -24,11 +24,46 @@ sudo dnf install fastflowlm
 
 ## Usage
 
-Verify the installation by running a query with a supported model:
+`flm` is the command-line utility for the FastFlowLM inference engine.
 
-```bash
-flm --model Gemma-4-E2B-it-GGUF --prompt "Hello NPU"
 ```
+Usage: flm <command> [options] [model_tag]
+
+Commands:
+  run <model_tag>     - Run the model interactively
+  serve <model_tag>   - Start the server
+  pull <model_tag>    - Download model files if not present
+  remove <model_tag>  - Remove a model
+  check <model_tag>   - Check a model
+  list                - List all available models
+  version             - Show version information
+  help                - Show this help message
+  port                - Show the default server port
+  validate            - Validate the NPU stack
+```
+
+### Examples
+
+* **Run a model interactively**:
+  ```bash
+  flm run llama3.2:1b
+  ```
+* **Run a model with ASR (Automatic Speech Recognition) enabled**:
+  ```bash
+  flm run llama3.2:1b --asr 1
+  ```
+* **Serve a model with custom context length**:
+  ```bash
+  flm serve llama3.2:1b --ctx-len 8192
+  ```
+* **Validate the NPU stack**:
+  ```bash
+  flm validate
+  ```
+* **List installed models**:
+  ```bash
+  flm list --filter installed
+  ```
 
 > **Note:** Ensure your host limits are configured for memory locking as described in `xrt-rpm` post-install steps.
 
