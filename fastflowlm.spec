@@ -32,6 +32,9 @@ BuildRequires:  xrt-devel
 # FastFlowLM runtime dependencies
 Requires:       xrt-npu
 Requires:       xrt-plugin-amdxdna
+Recommends:     mesa-va-drivers
+Suggests:       ffmpeg-libs
+
 
 %description
 FastFlowLM inference runtime for AMD NPU devices.
