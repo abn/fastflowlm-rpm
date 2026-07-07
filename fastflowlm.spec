@@ -2,7 +2,7 @@
 
 Name:           fastflowlm
 Version:        0.9.44
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
 License:        MIT AND Proprietary
@@ -66,6 +66,9 @@ FastFlowLM inference runtime for AMD NPU devices.
 %{_datadir}/flm/
 
 %changelog
+* Tue Jul 07 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.44-2
+- Use patch for CMakeLists instead of dirty submodule
+
 * Tue Jul 07 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.44-1
 - Update to v0.9.44
 
