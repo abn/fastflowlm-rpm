@@ -65,6 +65,9 @@ FastFlowLM inference runtime for AMD NPU devices.
 %{_datadir}/flm/
 
 %changelog
+* Tue Jul 07 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.44-1
+- Update to v0.9.44
+
 * Sat Jul 04 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.43-3
 - Recommend mesa-va-drivers and suggest ffmpeg-libs for dynamic multimedia dependencies
 
