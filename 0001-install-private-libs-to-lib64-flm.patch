@@ -1,0 +1,25 @@
+diff --git a/FastFlowLM/src/CMakeLists.txt b/FastFlowLM/src/CMakeLists.txt
+index d8bc315..259603c 100644
+--- a/FastFlowLM/src/CMakeLists.txt
++++ b/FastFlowLM/src/CMakeLists.txt
+@@ -601,7 +601,11 @@ else()
+     endif()
+ 
+     file(GLOB so_libs "${CMAKE_SOURCE_DIR}/lib/*.so")
+-    install(FILES ${so_libs} DESTINATION lib)
++    if(FLM_PORTABLE_BUILD)
++        install(FILES ${so_libs} DESTINATION lib)
++    else()
++        install(FILES ${so_libs} DESTINATION "${CMAKE_INSTALL_LIBDIR}/flm")
++    endif()
+ 
+     # Bundle system libraries for portable distribution
+     if(FLM_PORTABLE_BUILD)
+@@ -707,7 +711,7 @@ else()
+         set_target_properties(flm PROPERTIES INSTALL_RPATH "$ORIGIN/lib")
+     else()
+         # Standard FHS layout
+-        set_target_properties(flm PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
++        set_target_properties(flm PROPERTIES INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/flm")
+     endif()
+ endif()

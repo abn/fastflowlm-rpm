@@ -8,6 +8,7 @@ Summary:        FastFlowLM inference runtime for AMD NPU
 License:        MIT AND Proprietary
 URL:            https://github.com/FastFlowLM/FastFlowLM
 Source0:        %{name}-%{version}.tar.gz
+Patch0:         0001-install-private-libs-to-lib64-flm.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
