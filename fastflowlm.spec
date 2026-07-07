@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           fastflowlm
-Version:        0.9.43
-Release:        3%{?dist}
+Version:        0.9.44
+Release:        1%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
 License:        MIT AND Proprietary
@@ -58,7 +58,7 @@ FastFlowLM inference runtime for AMD NPU devices.
 %cmake_install
 
 %files
-%license FastFlowLM/LICENSE_RUNTIME.txt FastFlowLM/LICENSE_BINARY.txt
+%license FastFlowLM/LICENSE_RUNTIME.txt FastFlowLM/TERMS.md
 %doc FastFlowLM/README.md
 %{_bindir}/flm
 %{_libdir}/flm/
