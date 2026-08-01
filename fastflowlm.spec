@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           fastflowlm
-Version:        0.9.45
-Release:        2%{?dist}
+Version:        0.9.46
+Release:        1%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
 License:        MIT AND Proprietary
@@ -66,6 +66,9 @@ FastFlowLM inference runtime for AMD NPU devices.
 %{_datadir}/flm/
 
 %changelog
+* Sat Aug 01 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.46-1
+- Update to v0.9.46
+
 * Mon Jul 20 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.45-2
 - feat(fastflowlm): upgrade to v0.9.45 (arun.neelicattu@gmail.com)
 
