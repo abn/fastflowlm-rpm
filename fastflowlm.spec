@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           fastflowlm
-Version:        0.9.46
+Version:        1.0.0
 Release:        1%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
@@ -66,6 +66,12 @@ FastFlowLM inference runtime for AMD NPU devices.
 %{_datadir}/flm/
 
 %changelog
+* Tue Aug 11 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.0-1
+- 
+
+* Tue Aug 11 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.0-1
+- Update to v1.0.0
+
 * Sat Aug 01 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 0.9.46-1
 - feat(fastflowlm): upgrade to v0.9.46 (arun.neelicattu@gmail.com)
 
