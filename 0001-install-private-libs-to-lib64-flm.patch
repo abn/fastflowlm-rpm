@@ -1,25 +1,16 @@
 diff --git a/FastFlowLM/src/CMakeLists.txt b/FastFlowLM/src/CMakeLists.txt
-index 8c71f94..4af4238 100644
+index 619e078..20d4332 100644
 --- a/FastFlowLM/src/CMakeLists.txt
 +++ b/FastFlowLM/src/CMakeLists.txt
-@@ -602,7 +602,11 @@ else()
+@@ -607,9 +607,9 @@ else()
+         # into <prefix>/lib and flm resolves them via $ORIGIN/../lib. XRT itself is
+         # an external dependency (libxrt-npu2) resolved from the system.
+         set(FLM_BIN_DESTINATION "bin")
+-        set(FLM_ENGINE_LIB_DESTINATION "${CMAKE_INSTALL_LIBDIR}")
++        set(FLM_ENGINE_LIB_DESTINATION "${CMAKE_INSTALL_LIBDIR}/flm")
+         set(FLM_SHARE_DESTINATION "share/flm")
+-        set(FLM_FLM_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
++        set(FLM_FLM_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/flm")
+         set(FLM_ENGINE_INSTALL_RPATH "$ORIGIN")
      endif()
  
-     file(GLOB so_libs "${CMAKE_SOURCE_DIR}/lib/*.so")
--    install(FILES ${so_libs} DESTINATION lib)
-+    if(FLM_PORTABLE_BUILD)
-+        install(FILES ${so_libs} DESTINATION lib)
-+    else()
-+        install(FILES ${so_libs} DESTINATION "${CMAKE_INSTALL_LIBDIR}/flm")
-+    endif()
- 
-     # Bundle system libraries for portable distribution
-     if(FLM_PORTABLE_BUILD)
-@@ -758,7 +762,7 @@ else()
-         set_target_properties(flm PROPERTIES INSTALL_RPATH "$ORIGIN/lib")
-     else()
-         # Standard FHS layout
--        set_target_properties(flm PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
-+        set_target_properties(flm PROPERTIES INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/flm")
-     endif()
- endif()
