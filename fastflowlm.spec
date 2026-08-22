@@ -66,6 +66,9 @@ FastFlowLM inference runtime for AMD NPU devices.
 %{_datadir}/flm/
 
 %changelog
+* Sun Aug 23 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.2-1
+- Update to v1.0.2 (arun.neelicattu@gmail.com)
+
 * Sat Aug 22 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.2-1
 - Update to v1.0.2
 
