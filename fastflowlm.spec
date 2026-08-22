@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           fastflowlm
-Version:        1.0.0
-Release:        3%{?dist}
+Version:        1.0.2
+Release:        1%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
 License:        MIT AND Proprietary
@@ -66,6 +66,9 @@ FastFlowLM inference runtime for AMD NPU devices.
 %{_datadir}/flm/
 
 %changelog
+* Sat Aug 22 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.2-1
+- Update to v1.0.2
+
 * Tue Aug 11 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.0-3
 - Fix CMake patch for FastFlowLM v1.0.0 (arun.neelicattu@gmail.com)
 
