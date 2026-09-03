@@ -1,0 +1,17 @@
+# Build and packaging output
+build/
+output/
+*.tar.gz
+*.rpm
+*.log
+
+# Tito temporary patch and mailbox files
+.mbx
+.cover
+*.patch.mbx
+
+# IDE and editor files
+.vscode/
+.idea/
+*~
+*.swp
