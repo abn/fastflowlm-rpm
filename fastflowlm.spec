@@ -2,13 +2,15 @@
 
 Name:           fastflowlm
 Version:        1.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
 License:        MIT AND Proprietary
 URL:            https://github.com/FastFlowLM/FastFlowLM
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         0001-install-private-libs-to-lib64-flm.patch
+Patch1:         0002-hrx-lm-config-abi-compat.patch
+Patch2:         0003-hrx-amdxdna-buffer-alloc.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
@@ -29,41 +31,116 @@ BuildRequires:  cargo
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  libuuid-devel
 BuildRequires:  xrt-devel
+BuildRequires:  hrx-devel
+BuildRequires:  patchelf
 
 # FastFlowLM runtime dependencies
-Requires:       xrt-npu
-Requires:       xrt-plugin-amdxdna
+Requires:       (fastflowlm-xrt or fastflowlm-hrx)
+Recommends:     fastflowlm-xrt
+Suggests:       fastflowlm-hrx
 Recommends:     mesa-va-drivers
 Suggests:       ffmpeg-libs
 
-
 %description
 FastFlowLM inference runtime for AMD NPU devices.
+
+%package xrt
+Summary:        FastFlowLM inference runtime for AMD NPU (XRT backend)
+Requires:       %{name} = %{version}-%{release}
+Requires:       xrt-npu
+Requires:       xrt-plugin-amdxdna
+Requires(post): %{_sbindir}/update-alternatives
+Requires(postun): %{_sbindir}/update-alternatives
+Provides:       %{name}-backend = %{version}-%{release}
+
+%description xrt
+FastFlowLM backend using Xilinx Run Time (XRT) for AMD NPU devices.
+
+%package hrx
+Summary:        FastFlowLM inference runtime for AMD NPU (HRX backend)
+Requires:       %{name} = %{version}-%{release}
+Requires:       hrx
+Requires(post): %{_sbindir}/update-alternatives
+Requires(postun): %{_sbindir}/update-alternatives
+Provides:       %{name}-backend = %{version}-%{release}
+
+%description hrx
+FastFlowLM backend using Hip Runtime Extended (HRX) for AMD NPU devices.
 
 %prep
 %autosetup -p1
 
 %build
-# Configure CMake to use the bundled XRT package headers and libraries
-%cmake -S FastFlowLM/src -B %{_vpath_builddir} \
+# Build XRT backend
+%define _vpath_builddir build-xrt
+%cmake -S FastFlowLM/src \
     -GNinja \
     -DFLM_VERSION=%{version} \
     -DNPU_VERSION=32.0.203.304 \
     -DXRT_INCLUDE_DIR=/opt/xilinx/xrt/include \
     -DXRT_LIB_DIR=/opt/xilinx/xrt/lib64 \
-    -DCMAKE_XCLBIN_PREFIX=%{_datadir}/flm
+    -DCMAKE_XCLBIN_PREFIX=%{_datadir}/flm \
+    -DFLM_USE_HRX=OFF \
+    -DFLM_BIN_NAME=flm-xrt
+%cmake_build
 
+# Build HRX backend
+%define _vpath_builddir build-hrx
+%cmake -S FastFlowLM/src \
+    -GNinja \
+    -DFLM_VERSION=%{version} \
+    -DNPU_VERSION=32.0.203.304 \
+    -DCMAKE_XCLBIN_PREFIX=%{_datadir}/flm \
+    -DFLM_USE_HRX=ON \
+    -DFLM_SYSTEM_HRX=ON \
+    -DFLM_BIN_NAME=flm-hrx
 %cmake_build
 
 %install
+# Install XRT backend
+%define _vpath_builddir build-xrt
 %cmake_install
+
+# Install HRX backend
+%define _vpath_builddir build-hrx
+%cmake_install
+
+# Ghost file for alternatives link
+mkdir -p %{buildroot}%{_bindir}
+touch %{buildroot}%{_bindir}/flm
+
+%post xrt
+%{_sbindir}/update-alternatives --install %{_bindir}/flm flm %{_bindir}/flm-xrt 10
+
+%postun xrt
+if [ $1 -eq 0 ]; then
+    %{_sbindir}/update-alternatives --remove flm %{_bindir}/flm-xrt
+fi
+
+%post hrx
+%{_sbindir}/update-alternatives --install %{_bindir}/flm flm %{_bindir}/flm-hrx 20
+
+%postun hrx
+if [ $1 -eq 0 ]; then
+    %{_sbindir}/update-alternatives --remove flm %{_bindir}/flm-hrx
+fi
 
 %files
 %license FastFlowLM/LICENSE_RUNTIME.txt FastFlowLM/TERMS.md
 %doc FastFlowLM/README.md
-%{_bindir}/flm
-%{_libdir}/flm/
+%dir %{_libdir}/flm
 %{_datadir}/flm/
+
+%files xrt
+%{_bindir}/flm-xrt
+%{_libdir}/flm/xrt/
+%ghost %{_bindir}/flm
+
+%files hrx
+%{_bindir}/flm-hrx
+%{_libdir}/flm/hrx/
+%ghost %{_bindir}/flm
+
 
 %changelog
 * Wed Sep 02 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.4-1

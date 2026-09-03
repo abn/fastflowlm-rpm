@@ -1,0 +1,21 @@
+--- a/FastFlowLM/src/include/hrx_cpp/hrx_cpp.hpp
++++ b/FastFlowLM/src/include/hrx_cpp/hrx_cpp.hpp
+@@ -65,6 +65,9 @@
+ 
+     void ensure() {
+         if (dev) return;
++        if (!std::getenv("HRX_GPU_DRIVER")) {
++            setenv("HRX_GPU_DRIVER", "amdxdna", 0);
++        }
+         hrx_status_t init_status = hrx_gpu_initialize(0);
+         const bool initialized =
+             hrx_status_is_ok(init_status) ||
+@@ -313,7 +316,7 @@
+         // the buffer's lifetime). Coherence maintained via flush/invalidate.
+         hrx_status_t s = hrx_buffer_allocate(
+             r.stream, sz,
+-            HRX_MEMORY_TYPE_HOST_LOCAL | HRX_MEMORY_TYPE_DEVICE_VISIBLE,
++            HRX_MEMORY_TYPE_DEVICE_VISIBLE,
+             HRX_BUFFER_USAGE_DEFAULT | HRX_BUFFER_USAGE_MAPPING_PERSISTENT,
+             &hbuf_);
+         if (!hrx_status_is_ok(s) || !hbuf_) {

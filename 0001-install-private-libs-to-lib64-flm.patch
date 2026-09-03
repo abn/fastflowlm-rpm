@@ -1,16 +1,87 @@
-diff --git a/FastFlowLM/src/CMakeLists.txt b/FastFlowLM/src/CMakeLists.txt
-index 619e078..20d4332 100644
 --- a/FastFlowLM/src/CMakeLists.txt
 +++ b/FastFlowLM/src/CMakeLists.txt
-@@ -607,9 +607,9 @@ else()
+@@ -268,6 +268,9 @@
+ 
+ 
+ add_executable(flm ${SOURCES} ${HEADERS})
++if(FLM_BIN_NAME)
++    set_target_properties(flm PROPERTIES OUTPUT_NAME "${FLM_BIN_NAME}")
++endif()
+ 
+ if(WIN32)
+     if(VCPKG_TOOLCHAIN)
+@@ -404,6 +407,33 @@
+ endif()
+ 
+ # Link your custom libraries (these may still be DLLs if no static versions available)
++if(FLM_USE_HRX AND NOT WIN32)
++    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/gemma4_12b_stub.cpp" [=[
++#include "models/gemma4_12b/gemma4_12b_npu.hpp"
++#include <stdexcept>
++
++gemma4_12b_npu::gemma4_12b_npu(LM_Config, npu_xclbin_manager*, int) {
++    throw std::runtime_error("gemma4_12b is not supported on Linux with HRX backend");
++}
++gemma4_12b_npu::~gemma4_12b_npu() = default;
++buffer<bf16> gemma4_12b_npu::forward(int) { return {}; }
++buffer<bf16> gemma4_12b_npu::prefill(std::vector<int>&, void*) { return {}; }
++void gemma4_12b_npu::set_context_length(int) {}
++void gemma4_12b_npu::load_weights(Q4NX&) {}
++void gemma4_12b_npu::clear_context() {}
++buffer<bf16> gemma4_12b_npu::get_k_cache(int, int) { return {}; }
++buffer<bf16> gemma4_12b_npu::get_v_cache(int, int) { return {}; }
++int gemma4_12b_npu::checkpoint() { return 0; }
++int gemma4_12b_npu::restore() { return 0; }
++void gemma4_12b_npu::update_max_length(unsigned int) {}
++int gemma4_12b_npu::get_current_context_length() { return 0; }
++]=])
++    add_library(gemma4_12b_npu SHARED "${CMAKE_CURRENT_BINARY_DIR}/gemma4_12b_stub.cpp")
++    target_compile_definitions(gemma4_12b_npu PRIVATE FLM_USE_HRX=1)
++    target_include_directories(gemma4_12b_npu PRIVATE include common)
++    target_link_libraries(gemma4_12b_npu PRIVATE hrx::hrx)
++endif()
++
+ target_link_libraries(flm PUBLIC
+     q4_npu_eXpress
+     llama_npu
+@@ -599,23 +629,26 @@
+         # runtime (libhrx) one level up in <prefix>/lib, so engines resolve it via
+         # $ORIGIN/.. — this separation is what lets the HRX .deb ship libhrx.
+         set(FLM_BIN_DESTINATION "bin")
+-        set(FLM_ENGINE_LIB_DESTINATION "${CMAKE_INSTALL_LIBDIR}/flm")
++        set(FLM_ENGINE_LIB_DESTINATION "${CMAKE_INSTALL_LIBDIR}/flm/hrx")
+         set(FLM_SHARE_DESTINATION "share/flm")
+-        set(FLM_FLM_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/flm;$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+-        set(FLM_ENGINE_INSTALL_RPATH "$ORIGIN:$ORIGIN/..")
++        set(FLM_FLM_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/flm/hrx;$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
++        set(FLM_ENGINE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../..")
+     else()
+         # XRT FHS layout: identical to upstream main — engine libs install directly
          # into <prefix>/lib and flm resolves them via $ORIGIN/../lib. XRT itself is
          # an external dependency (libxrt-npu2) resolved from the system.
          set(FLM_BIN_DESTINATION "bin")
 -        set(FLM_ENGINE_LIB_DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-+        set(FLM_ENGINE_LIB_DESTINATION "${CMAKE_INSTALL_LIBDIR}/flm")
++        set(FLM_ENGINE_LIB_DESTINATION "${CMAKE_INSTALL_LIBDIR}/flm/xrt")
          set(FLM_SHARE_DESTINATION "share/flm")
 -        set(FLM_FLM_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
-+        set(FLM_FLM_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/flm")
++        set(FLM_FLM_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/flm/xrt")
          set(FLM_ENGINE_INSTALL_RPATH "$ORIGIN")
      endif()
  
+     file(GLOB so_libs "${FLM_ENGINE_LIB_DIR}/*.so*")
+     install(FILES ${so_libs} DESTINATION "${FLM_ENGINE_LIB_DESTINATION}")
++    if(TARGET gemma4_12b_npu)
++        install(TARGETS gemma4_12b_npu LIBRARY DESTINATION "${FLM_ENGINE_LIB_DESTINATION}")
++    endif()
+     set_target_properties(flm PROPERTIES INSTALL_RPATH "${FLM_FLM_INSTALL_RPATH}")
+ 
+     # Engine .so file names, used below to keep them out of the flm dependency
+@@ -816,7 +849,7 @@
+             endif()
+         endforeach()
+     ")
+-elseif(NOT FLM_USE_HRX)
++elseif(NOT FLM_USE_HRX OR FLM_SYSTEM_HRX)
+     # System XRT (.deb): XRT is an external dependency (the libxrt-npu2 package)
+     # and flm's other shared libraries are resolved from the system via
+     # ${shlibs:Depends}. Nothing is bundled here.
