@@ -143,6 +143,13 @@ fi
 
 
 %changelog
+* Thu Sep 03 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.4-2
+- chore: add .gitignore and agent guidelines (arun.neelicattu@gmail.com)
+- docs: document dual XRT and HRX backends and alternatives usage
+  (arun.neelicattu@gmail.com)
+- feat(rpm): package flm-xrt and flm-hrx with alternatives
+  (arun.neelicattu@gmail.com)
+
 * Wed Sep 02 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.4-1
 - Update to v1.0.4 (arun.neelicattu@gmail.com)
 
