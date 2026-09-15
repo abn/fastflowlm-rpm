@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           fastflowlm
-Version:        1.0.4
-Release:        2%{?dist}
+Version:        1.0.5
+Release:        1%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
 License:        MIT AND Proprietary
@@ -143,6 +143,9 @@ fi
 
 
 %changelog
+* Tue Sep 15 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.5-1
+- Update to v1.0.5
+
 * Thu Sep 03 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.4-2
 - chore: add .gitignore and agent guidelines (arun.neelicattu@gmail.com)
 - docs: document dual XRT and HRX backends and alternatives usage
