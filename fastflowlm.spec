@@ -144,6 +144,9 @@ fi
 
 %changelog
 * Tue Sep 15 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.5-1
+- Update to v1.0.5 (arun.neelicattu@gmail.com)
+
+* Tue Sep 15 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.5-1
 - Update to v1.0.5
 
 * Thu Sep 03 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.4-2
