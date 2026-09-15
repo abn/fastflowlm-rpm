@@ -145,6 +145,10 @@ fi
 %changelog
 * Wed Sep 16 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.5-2
 - Realign 0003-hrx-amdxdna-buffer-alloc.patch for v1.0.5
+  (arun.neelicattu@gmail.com)
+
+* Wed Sep 16 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.5-2
+- Realign 0003-hrx-amdxdna-buffer-alloc.patch for v1.0.5
 
 * Tue Sep 15 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.5-1
 - Update to v1.0.5 (arun.neelicattu@gmail.com)
