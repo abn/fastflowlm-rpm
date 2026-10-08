@@ -143,6 +143,11 @@ fi
 
 
 %changelog
+* Thu Oct 08 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.7-1
+- Stub gemma4e_flash and qwen3_8mtp engines for the HRX backend
+  (arun.neelicattu@gmail.com)
+- Update to v1.0.7 (arun.neelicattu@gmail.com)
+
 * Wed Sep 16 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.5-2
 - Realign 0003-hrx-amdxdna-buffer-alloc.patch for v1.0.5
   (arun.neelicattu@gmail.com)
