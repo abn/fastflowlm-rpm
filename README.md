@@ -13,13 +13,13 @@ FastFlowLM-rpm packages two hardware execution backends:
 1. **XRT Backend (`fastflowlm-xrt`)**:
    - Uses Xilinx Runtime (`xrt-base`, `xrt-plugin-amdxdna`).
    - Installs `/usr/bin/flm-xrt` with engine libraries isolated under `%{_libdir}/flm/xrt/`.
-   - Priority 10 in alternatives.
+   - Priority 20 in alternatives (the default).
 
 2. **HRX Backend (`fastflowlm-hrx`)**:
    - Uses Hip Runtime Extended (`libhrx.so` from `hrx`).
    - Installs `/usr/bin/flm-hrx` with engine libraries isolated under `%{_libdir}/flm/hrx/`.
    - Targets the Linux KMQ `amdxdna` driver (`/dev/accel/accel0`).
-   - Priority 20 in alternatives.
+   - Priority 10 in alternatives.
 
 Both backends can be co-installed on the same system. The common entrypoint `/usr/bin/flm` is managed using Fedora's `update-alternatives` mechanism.
 
@@ -67,7 +67,8 @@ sudo update-alternatives --set flm /usr/bin/flm-xrt
 
 ### Reset to Automatic Mode
 
-In auto mode, the backend with the highest priority (`flm-hrx`, priority 20) is selected:
+In auto mode, the backend with the highest priority (`flm-xrt`, priority 20) is selected. Each package
+upgrade re-registers both backends, so a system left in auto mode follows this default:
 
 ```bash
 sudo update-alternatives --auto flm

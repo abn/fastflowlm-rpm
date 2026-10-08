@@ -108,8 +108,23 @@ FastFlowLM backend using Hip Runtime Extended (HRX) for AMD NPU devices.
 mkdir -p %{buildroot}%{_bindir}
 touch %{buildroot}%{_bindir}/flm
 
+# Register a backend for /usr/bin/flm. Re-running --install with a changed
+# priority makes alternatives switch the group to manual mode and keep the
+# current link, so restore auto mode afterwards unless the admin had pinned a
+# backend with --set before this transaction.
+%global flm_alternatives_install() \
+flm_alt_mode=auto \
+if [ -r %{_sharedstatedir}/alternatives/flm ]; then \
+    flm_alt_mode=$(head -n1 %{_sharedstatedir}/alternatives/flm) \
+fi \
+%{_sbindir}/update-alternatives --install %{_bindir}/flm flm %{_bindir}/%1 %2 \
+if [ "$flm_alt_mode" = auto ]; then \
+    %{_sbindir}/update-alternatives --auto flm || : \
+fi \
+%{nil}
+
 %post xrt
-%{_sbindir}/update-alternatives --install %{_bindir}/flm flm %{_bindir}/flm-xrt 10
+%flm_alternatives_install flm-xrt 20
 
 %postun xrt
 if [ $1 -eq 0 ]; then
@@ -117,7 +132,7 @@ if [ $1 -eq 0 ]; then
 fi
 
 %post hrx
-%{_sbindir}/update-alternatives --install %{_bindir}/flm flm %{_bindir}/flm-hrx 20
+%flm_alternatives_install flm-hrx 10
 
 %postun hrx
 if [ $1 -eq 0 ]; then
