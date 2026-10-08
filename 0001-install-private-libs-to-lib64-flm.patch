@@ -1,6 +1,8 @@
+diff --git a/FastFlowLM/src/CMakeLists.txt b/FastFlowLM/src/CMakeLists.txt
+index 6642a274..94f7c774 100644
 --- a/FastFlowLM/src/CMakeLists.txt
 +++ b/FastFlowLM/src/CMakeLists.txt
-@@ -268,6 +268,9 @@
+@@ -272,6 +272,9 @@ endif()
  
  
  add_executable(flm ${SOURCES} ${HEADERS})
@@ -10,10 +12,10 @@
  
  if(WIN32)
      if(VCPKG_TOOLCHAIN)
-@@ -404,6 +407,105 @@
- endif()
+@@ -441,6 +444,80 @@ list(APPEND FLM_ENGINE_LINK_LIBS
+     hunyuan_npu
+ )
  
- # Link your custom libraries (these may still be DLLs if no static versions available)
 +if(FLM_USE_HRX AND NOT WIN32)
 +    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/gemma4_12b_stub.cpp" [=[
 +#include "models/gemma4_12b/gemma4_12b_npu.hpp"
@@ -39,31 +41,6 @@
 +    target_compile_definitions(gemma4_12b_npu PRIVATE FLM_USE_HRX=1)
 +    target_include_directories(gemma4_12b_npu PRIVATE include common)
 +    target_link_libraries(gemma4_12b_npu PRIVATE hrx::hrx)
-+
-+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/gemma4e_flash_stub.cpp" [=[
-+#include "models/gemma4e_flash/gemma4e_flash.hpp"
-+#include <stdexcept>
-+
-+gemma4e_flash::gemma4e_flash(LM_Config, npu_xclbin_manager*, int) {
-+    throw std::runtime_error("gemma4e_flash is not supported on Linux with HRX backend");
-+}
-+gemma4e_flash::~gemma4e_flash() = default;
-+buffer<bf16> gemma4e_flash::forward(int) { return {}; }
-+buffer<bf16> gemma4e_flash::prefill(std::vector<int>&, void*) { return {}; }
-+void gemma4e_flash::set_context_length(int) {}
-+void gemma4e_flash::load_weights(Q4NX&) {}
-+void gemma4e_flash::clear_context() {}
-+buffer<bf16> gemma4e_flash::get_k_cache(int, int) { return {}; }
-+buffer<bf16> gemma4e_flash::get_v_cache(int, int) { return {}; }
-+int gemma4e_flash::checkpoint() { return 0; }
-+int gemma4e_flash::restore() { return 0; }
-+void gemma4e_flash::update_max_length(unsigned int) {}
-+int gemma4e_flash::get_current_context_length() { return 0; }
-+]=])
-+    add_library(gemma4e_flash SHARED "${CMAKE_CURRENT_BINARY_DIR}/gemma4e_flash_stub.cpp")
-+    target_compile_definitions(gemma4e_flash PRIVATE FLM_USE_HRX=1)
-+    target_include_directories(gemma4e_flash PRIVATE include common)
-+    target_link_libraries(gemma4e_flash PRIVATE hrx::hrx)
 +
 +    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/qwen3_8mtp_stub.cpp" [=[
 +#include "models/qwen3_8mtp/qwen3_8mtp_npu.hpp"
@@ -113,10 +90,10 @@
 +    target_link_libraries(qwen3_8mtp_npu PRIVATE hrx::hrx)
 +endif()
 +
+ # Link your custom libraries (these may still be DLLs if no static versions available)
  target_link_libraries(flm PUBLIC
-     q4_npu_eXpress
-     llama_npu
-@@ -611,23 +713,28 @@
+     ${FLM_ENGINE_LINK_LIBS}
+@@ -627,23 +704,28 @@ else()
          # runtime (libhrx) one level up in <prefix>/lib, so engines resolve it via
          # $ORIGIN/.. — this separation is what lets the HRX .deb ship libhrx.
          set(FLM_BIN_DESTINATION "bin")
@@ -150,7 +127,7 @@
      set_target_properties(flm PROPERTIES INSTALL_RPATH "${FLM_FLM_INSTALL_RPATH}")
  
      # Engine .so file names, used below to keep them out of the flm dependency
-@@ -835,7 +942,7 @@
+@@ -851,7 +933,7 @@ elseif(NOT FLM_USE_HRX AND FLM_PORTABLE_BUILD)
              endif()
          endforeach()
      ")

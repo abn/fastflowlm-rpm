@@ -2,14 +2,13 @@
 
 Name:           fastflowlm
 Version:        1.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
 License:        MIT AND Proprietary
 URL:            https://github.com/FastFlowLM/FastFlowLM
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         0001-install-private-libs-to-lib64-flm.patch
-Patch1:         0002-hrx-lm-config-abi-compat.patch
 Patch2:         0003-hrx-amdxdna-buffer-alloc.patch
 
 BuildRequires:  gcc-c++
