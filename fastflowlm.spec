@@ -157,6 +157,11 @@ fi
 
 
 %changelog
+* Thu Oct 08 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.7-2
+- feat(rpm): make flm-xrt the default flm backend (arun.neelicattu@gmail.com)
+- fix(hrx): ship the HRX engines that match the v1.0.7 sources
+  (arun.neelicattu@gmail.com)
+
 * Thu Oct 08 2026 Arun Babu Neelicattu <arun.neelicattu@gmail.com> 1.0.7-1
 - Stub gemma4e_flash and qwen3_8mtp engines for the HRX backend
   (arun.neelicattu@gmail.com)
