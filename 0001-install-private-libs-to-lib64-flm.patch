@@ -10,7 +10,7 @@
  
  if(WIN32)
      if(VCPKG_TOOLCHAIN)
-@@ -404,6 +407,33 @@
+@@ -404,6 +407,105 @@
  endif()
  
  # Link your custom libraries (these may still be DLLs if no static versions available)
@@ -39,12 +39,84 @@
 +    target_compile_definitions(gemma4_12b_npu PRIVATE FLM_USE_HRX=1)
 +    target_include_directories(gemma4_12b_npu PRIVATE include common)
 +    target_link_libraries(gemma4_12b_npu PRIVATE hrx::hrx)
++
++    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/gemma4e_flash_stub.cpp" [=[
++#include "models/gemma4e_flash/gemma4e_flash.hpp"
++#include <stdexcept>
++
++gemma4e_flash::gemma4e_flash(LM_Config, npu_xclbin_manager*, int) {
++    throw std::runtime_error("gemma4e_flash is not supported on Linux with HRX backend");
++}
++gemma4e_flash::~gemma4e_flash() = default;
++buffer<bf16> gemma4e_flash::forward(int) { return {}; }
++buffer<bf16> gemma4e_flash::prefill(std::vector<int>&, void*) { return {}; }
++void gemma4e_flash::set_context_length(int) {}
++void gemma4e_flash::load_weights(Q4NX&) {}
++void gemma4e_flash::clear_context() {}
++buffer<bf16> gemma4e_flash::get_k_cache(int, int) { return {}; }
++buffer<bf16> gemma4e_flash::get_v_cache(int, int) { return {}; }
++int gemma4e_flash::checkpoint() { return 0; }
++int gemma4e_flash::restore() { return 0; }
++void gemma4e_flash::update_max_length(unsigned int) {}
++int gemma4e_flash::get_current_context_length() { return 0; }
++]=])
++    add_library(gemma4e_flash SHARED "${CMAKE_CURRENT_BINARY_DIR}/gemma4e_flash_stub.cpp")
++    target_compile_definitions(gemma4e_flash PRIVATE FLM_USE_HRX=1)
++    target_include_directories(gemma4e_flash PRIVATE include common)
++    target_link_libraries(gemma4e_flash PRIVATE hrx::hrx)
++
++    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/qwen3_8mtp_stub.cpp" [=[
++#include "models/qwen3_8mtp/qwen3_8mtp_npu.hpp"
++#include <stdexcept>
++
++qwen3_8mtp_npu::qwen3_8mtp_npu(LM_Config, npu_xclbin_manager*, int) {
++    throw std::runtime_error("qwen3_8mtp is not supported on Linux with HRX backend");
++}
++qwen3_8mtp_npu::~qwen3_8mtp_npu() = default;
++buffer<bf16> qwen3_8mtp_npu::forward(int) { return {}; }
++buffer<bf16> qwen3_8mtp_npu::prefill(std::vector<int>&, void*) { return {}; }
++void qwen3_8mtp_npu::set_context_length(int) {}
++void qwen3_8mtp_npu::load_weights(Q4NX&) {}
++void qwen3_8mtp_npu::clear_context() {}
++buffer<bf16> qwen3_8mtp_npu::get_k_cache(int, int) { return {}; }
++buffer<bf16> qwen3_8mtp_npu::get_v_cache(int, int) { return {}; }
++int qwen3_8mtp_npu::checkpoint() { return 0; }
++int qwen3_8mtp_npu::restore() { return 0; }
++void qwen3_8mtp_npu::update_max_length(unsigned int) {}
++int qwen3_8mtp_npu::get_current_context_length() { return 0; }
++bool qwen3_8mtp_npu::supports_speculation() const { return false; }
++std::vector<int> qwen3_8mtp_npu::speculate(int, int) { return {}; }
++void qwen3_8mtp_npu::set_stop_tokens(const std::vector<int>&) {}
++double qwen3_8mtp_npu::mean_accepted_length() const { return 0.0; }
++double qwen3_8mtp_npu::draft_hit_rate() const { return 0.0; }
++uint64_t qwen3_8mtp_npu::speculation_cycles() const { return 0; }
++std::string qwen3_8mtp_npu::speculation_stats() const { return {}; }
++void qwen3_8mtp_npu::report_speculation_stats() const {}
++std::string qwen3_8mtp_npu::speculation_timing() const { return {}; }
++double qwen3_8mtp_npu::speculation_phase_fraction() const { return 0.0; }
++uint64_t qwen3_8mtp_npu::last_speculation_prime_us() const { return 0; }
++void qwen3_8mtp_npu::reset_speculation_stats() {}
++const float* qwen3_8mtp_npu::last_hidden_states(int&, int&) const { return nullptr; }
++const float* qwen3_8mtp_npu::last_normed_states(int&, int&) { return nullptr; }
++std::vector<int> qwen3_8mtp_npu::mtp_draft(const std::vector<int>&, const float*, int, int) { return {}; }
++int qwen3_8mtp_npu::prefill_verify(const std::vector<int>&, const std::vector<int>&, std::vector<int>&) { return 0; }
++bool qwen3_8mtp_npu::has_mtp_head() const { return false; }
++bool qwen3_8mtp_npu::has_vision_tower() const { return false; }
++int qwen3_8mtp_npu::image_tokens_for(int, int, int) const { return 0; }
++void qwen3_8mtp_npu::encode_image(const float*, int, int, int, float*) {}
++std::string qwen3_8mtp_npu::vision_backend() const { return {}; }
++void qwen3_8mtp_npu::set_vision_tap(std::function<void(const char*, const float*, int, int)>) {}
++]=])
++    add_library(qwen3_8mtp_npu SHARED "${CMAKE_CURRENT_BINARY_DIR}/qwen3_8mtp_stub.cpp")
++    target_compile_definitions(qwen3_8mtp_npu PRIVATE FLM_USE_HRX=1)
++    target_include_directories(qwen3_8mtp_npu PRIVATE include common)
++    target_link_libraries(qwen3_8mtp_npu PRIVATE hrx::hrx)
 +endif()
 +
  target_link_libraries(flm PUBLIC
      q4_npu_eXpress
      llama_npu
-@@ -599,23 +629,26 @@
+@@ -611,23 +713,28 @@
          # runtime (libhrx) one level up in <prefix>/lib, so engines resolve it via
          # $ORIGIN/.. — this separation is what lets the HRX .deb ship libhrx.
          set(FLM_BIN_DESTINATION "bin")
@@ -70,13 +142,15 @@
  
      file(GLOB so_libs "${FLM_ENGINE_LIB_DIR}/*.so*")
      install(FILES ${so_libs} DESTINATION "${FLM_ENGINE_LIB_DESTINATION}")
-+    if(TARGET gemma4_12b_npu)
-+        install(TARGETS gemma4_12b_npu LIBRARY DESTINATION "${FLM_ENGINE_LIB_DESTINATION}")
-+    endif()
++    foreach(stub_target gemma4_12b_npu gemma4e_flash qwen3_8mtp_npu)
++        if(TARGET ${stub_target})
++            install(TARGETS ${stub_target} LIBRARY DESTINATION "${FLM_ENGINE_LIB_DESTINATION}")
++        endif()
++    endforeach()
      set_target_properties(flm PROPERTIES INSTALL_RPATH "${FLM_FLM_INSTALL_RPATH}")
  
      # Engine .so file names, used below to keep them out of the flm dependency
-@@ -816,7 +849,7 @@
+@@ -835,7 +942,7 @@
              endif()
          endforeach()
      ")
