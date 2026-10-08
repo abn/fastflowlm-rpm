@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           fastflowlm
-Version:        1.0.5
-Release:        2%{?dist}
+Version:        1.0.7
+Release:        1%{?dist}
 Summary:        FastFlowLM inference runtime for AMD NPU
 
 License:        MIT AND Proprietary
